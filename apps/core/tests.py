@@ -242,6 +242,11 @@ class TestSeedDemoCommand:
             Booking.Status.CANCELLED,
             Booking.Status.PENDING_PAYMENT,
         }
+        # Booking requires a logged-in passenger account, so these demo
+        # accounts must have a real, usable password to demo with.
+        passenger = User.objects.get(email="passenger1@bbms.test")
+        assert passenger.has_usable_password()
+        assert passenger.check_password("Demo12345!")
 
     def test_is_safe_to_run_twice_in_a_row(self):
         from django.core.management import call_command

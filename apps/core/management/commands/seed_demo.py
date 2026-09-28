@@ -375,7 +375,11 @@ class Command(BaseCommand):
                 },
             )
             if created:
-                user.set_unusable_password()
+                # Booking now requires a logged-in passenger account (ad hoc,
+                # per direct request), so these demo accounts need a real,
+                # usable password to actually demo with — not an unusable
+                # one, which was fine back when guest checkout existed.
+                user.set_password(DEMO_STAFF_PASSWORD)
                 user.save(update_fields=["password"])
                 if i < 5:
                     SavedPassenger.objects.get_or_create(
