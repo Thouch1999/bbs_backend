@@ -4,6 +4,7 @@ booking. Plus refunds and promo code validation. Business logic only —
 views just translate HTTP <-> these calls, per CLAUDE.md's hard rules.
 """
 
+import uuid
 from datetime import datetime, time, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -21,6 +22,7 @@ from apps.notifications import services as notification_services
 from apps.trips import services as trip_services
 
 from .gateways import InvalidSignatureError, get_gateway
+from .gateways.base import GatewayCallbackResult
 from .models import OperatorPayout, Payment, PromoCode, Refund, WebhookLog
 
 
@@ -80,6 +82,27 @@ def initiate_payment(booking: Booking, provider: str) -> tuple[Payment, dict]:
 
     gateway = get_gateway(provider)
     gateway_payload = gateway.initiate(payment)
+
+    if provider == Payment.Provider.DEMO:
+        # No real gateway exists to send a webhook back, so this
+        # presentation-only provider confirms itself immediately instead of
+        # leaving the passenger stuck waiting on a callback nobody will ever
+        # send. Goes through the exact same atomic/idempotent path a real
+        # webhook would (booking confirm + notification fan-out included).
+        # Deliberately separate from Provider.MOCK, whose whole purpose is
+        # staying pending until *tests* send it a signed webhook — reusing
+        # MOCK here would silently break that.
+        payment = _apply_webhook_result(
+            payment.pk,
+            provider=provider,
+            result=GatewayCallbackResult(
+                merchant_ref=str(payment.public_id),
+                provider_txn_id=f"demo-{uuid.uuid4().hex[:12]}",
+                succeeded=True,
+                raw={"demo_auto_confirm": True},
+            ),
+        )
+
     return payment, gateway_payload
 
 

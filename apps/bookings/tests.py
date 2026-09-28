@@ -302,7 +302,7 @@ class TestGuestLookupApi:
 
 
 class TestCreateBookingApi:
-    def test_guest_can_create_booking_via_api(self):
+    def test_anonymous_cannot_create_booking_via_api(self):
         trip, seats, _op = _make_trip()
         token = trip_services.hold_seats(trip.id, [seats[0].id], session_key="guest-session")
 
@@ -318,8 +318,29 @@ class TestCreateBookingApi:
             },
             format="json",
         )
+        assert resp.status_code == 401
+
+    def test_logged_in_passenger_can_create_booking_via_api(self):
+        trip, seats, _op = _make_trip()
+        token = trip_services.hold_seats(trip.id, [seats[0].id], session_key="guest-session")
+        passenger = User.objects.create_user(email="p@bbms.test", password="x", role=User.Role.PASSENGER)
+
+        client = APIClient()
+        client.force_authenticate(passenger)
+        resp = client.post(
+            "/api/v1/bookings/",
+            {
+                "trip_id": str(trip.public_id),
+                "hold_token": token,
+                "passengers": [_passenger()],
+                "contact_phone": "012345678",
+                "currency": "USD",
+            },
+            format="json",
+        )
         assert resp.status_code == 201
         assert resp.data["status"] == Booking.Status.PENDING_PAYMENT
+        assert Booking.objects.get(public_id=resp.data["public_id"]).user_id == passenger.id
 
 
 class TestAgentAssistedBooking:

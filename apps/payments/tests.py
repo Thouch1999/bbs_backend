@@ -117,14 +117,30 @@ class TestInitiatePayment:
             services.initiate_payment(booking, Payment.Provider.ABA_PAYWAY)
 
 
+def _make_passenger(email="passenger@bbms.test"):
+    return User.objects.create_user(email=email, password="x", role=User.Role.PASSENGER)
+
+
 class TestInitiatePaymentEndpoint:
     """API-level coverage of InitiatePaymentView — TestInitiatePayment above
     only exercises services.initiate_payment() directly."""
 
-    def test_endpoint_returns_gateway_payload(self):
+    def test_endpoint_requires_login(self):
         trip, seats, _op = _make_trip()
         booking = _make_booking(trip, seats)
         resp = APIClient().post(
+            "/api/v1/payments/",
+            {"booking_id": str(booking.public_id), "provider": Payment.Provider.MOCK},
+            format="json",
+        )
+        assert resp.status_code == 401
+
+    def test_endpoint_returns_gateway_payload(self):
+        trip, seats, _op = _make_trip()
+        booking = _make_booking(trip, seats)
+        client = APIClient()
+        client.force_authenticate(_make_passenger())
+        resp = client.post(
             "/api/v1/payments/",
             {"booking_id": str(booking.public_id), "provider": Payment.Provider.MOCK},
             format="json",
@@ -136,7 +152,9 @@ class TestInitiatePaymentEndpoint:
         trip, seats, _op = _make_trip()
         booking = _make_booking(trip, seats)
         booking_services.confirm_booking(booking)
-        resp = APIClient().post(
+        client = APIClient()
+        client.force_authenticate(_make_passenger())
+        resp = client.post(
             "/api/v1/payments/",
             {"booking_id": str(booking.public_id), "provider": Payment.Provider.MOCK},
             format="json",
@@ -147,12 +165,29 @@ class TestInitiatePaymentEndpoint:
     def test_endpoint_returns_501_for_an_unwired_real_gateway(self):
         trip, seats, _op = _make_trip()
         booking = _make_booking(trip, seats)
-        resp = APIClient().post(
+        client = APIClient()
+        client.force_authenticate(_make_passenger())
+        resp = client.post(
             "/api/v1/payments/",
             {"booking_id": str(booking.public_id), "provider": Payment.Provider.ABA_PAYWAY},
             format="json",
         )
         assert resp.status_code == 501
+
+    def test_endpoint_auto_confirms_the_demo_provider(self):
+        trip, seats, _op = _make_trip()
+        booking = _make_booking(trip, seats)
+        client = APIClient()
+        client.force_authenticate(_make_passenger())
+        resp = client.post(
+            "/api/v1/payments/",
+            {"booking_id": str(booking.public_id), "provider": Payment.Provider.DEMO},
+            format="json",
+        )
+        assert resp.status_code == 201
+        assert resp.data["payment"]["status"] == Payment.Status.SUCCEEDED
+        booking.refresh_from_db()
+        assert booking.status == Booking.Status.CONFIRMED
 
 
 class TestWebhookIdempotencyAndSignature:
@@ -607,6 +642,7 @@ class TestCreateBookingWithPromoCode:
         )
         token = trip_services.hold_seats(trip.id, [seats[0].id], session_key="s")
         client = APIClient()
+        client.force_authenticate(_make_passenger())
         resp = client.post(
             "/api/v1/bookings/",
             {
@@ -627,6 +663,7 @@ class TestCreateBookingWithPromoCode:
         trip, seats, _op = _make_trip()
         token = trip_services.hold_seats(trip.id, [seats[0].id], session_key="s")
         client = APIClient()
+        client.force_authenticate(_make_passenger())
         resp = client.post(
             "/api/v1/bookings/",
             {

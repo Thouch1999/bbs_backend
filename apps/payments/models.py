@@ -10,6 +10,7 @@ class Payment(PublicIdModel, TimeStampedModel):
         ACLEDA = "acleda", "ACLEDA"
         COUNTER = "counter", "Pay at counter"
         MOCK = "mock", "Mock (dev/test)"
+        DEMO = "demo", "Demo payment (auto-confirms instantly)"
 
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"

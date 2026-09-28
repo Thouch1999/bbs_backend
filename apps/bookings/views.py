@@ -76,9 +76,16 @@ def _resolve_discount(data, *, user):
 
 
 class CreateBookingView(APIView):
-    """Guest checkout works without an account: contact_phone is always required."""
+    """
+    Booking requires a passenger account (ad hoc, per direct request — the
+    underlying services.create_booking() still accepts user=None for
+    AgentCreateBookingView's counter-staff-assisted flow below, and for the
+    guest PNR+phone lookup on already-existing bookings). contact_phone is
+    still always required, account or not, since it's how SMS notifications
+    are addressed.
+    """
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
         request=CreateBookingSerializer,
@@ -90,7 +97,7 @@ class CreateBookingView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        user = request.user if request.user.is_authenticated else None
+        user = request.user
         discount, error_response = _resolve_discount(data, user=user)
         if error_response is not None:
             return error_response

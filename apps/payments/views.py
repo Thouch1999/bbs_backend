@@ -40,9 +40,10 @@ def _error_response(exc, status_code=status.HTTP_400_BAD_REQUEST) -> Response:
 
 
 class InitiatePaymentView(APIView):
-    """Guest checkout pays too — no account required, same as booking creation."""
+    """Booking (and paying for it) requires a passenger account — see
+    CreateBookingView."""
 
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(
         request=InitiatePaymentSerializer,

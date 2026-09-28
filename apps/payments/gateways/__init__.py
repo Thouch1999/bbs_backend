@@ -9,6 +9,7 @@ from .base import (
     PaymentGateway,
 )
 from .counter import CounterGateway
+from .demo import DemoGateway
 from .mock import MockGateway
 from .wing import WingGateway
 
@@ -18,6 +19,7 @@ _GATEWAYS = {
     "acleda": ACLEDAGateway(),
     "counter": CounterGateway(),
     "mock": MockGateway(),
+    "demo": DemoGateway(),
 }
 
 
