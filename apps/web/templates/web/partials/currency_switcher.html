@@ -1,0 +1,9 @@
+{% load i18n %}
+<form action="{% url 'web:set_currency' %}" method="post" class="d-flex">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <select name="currency" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="{% trans 'Currency' %}">
+        <option value="KHR" {% if display_currency == "KHR" %}selected{% endif %}>KHR</option>
+        <option value="USD" {% if display_currency == "USD" %}selected{% endif %}>USD</option>
+    </select>
+</form>

@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Payment" %}{% endblock %}
+
+{% block content %}
+    <h1 class="h4">{% trans "Booking" %}</h1>
+
+    {% if not booking %}
+        <div class="alert alert-danger">{% trans "No booking matches that PNR and phone." %}</div>
+    {% else %}
+        <p>PNR: <strong>{{ booking.pnr }}</strong></p>
+        <p>{% trans "Status" %}: <span class="badge bg-warning text-dark">{{ booking.get_status_display }}</span></p>
+        <p class="fw-bold">
+            {{ booking.total_amount }} {{ booking.currency }}
+        </p>
+
+        {% if payment.provider == "counter" %}
+            <div class="alert alert-info">
+                {% trans "Pay at any counter to confirm this booking. Show your PNR." %}
+            </div>
+        {% elif payment.provider == "mock" %}
+            <div class="alert alert-warning">
+                {% trans "Dev/test mock gateway — simulate the payment result below." %}
+            </div>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="outcome" value="succeeded">
+                <button type="submit" class="btn btn-primary">{% trans "Simulate: payment succeeded" %}</button>
+            </form>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="outcome" value="failed">
+                <button type="submit" class="btn btn-outline-danger">{% trans "Simulate: payment failed" %}</button>
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Saved passenger" %}{% endblock %}
+
+{% block content %}
+    <h1 class="h4 mb-3">{% trans "Saved passenger" %}</h1>
+    <form method="post" style="max-width: 500px;">
+        {% csrf_token %}
+        {% include "web/partials/form_field.html" with field=form.full_name %}
+        {% include "web/partials/form_field.html" with field=form.age %}
+        {% include "web/partials/form_field.html" with field=form.gender %}
+        {% include "web/partials/form_field.html" with field=form.phone %}
+        {% include "web/partials/form_field.html" with field=form.id_document_number %}
+        <button type="submit" class="btn btn-bbms-cta">{% trans "Save" %}</button>
+    </form>
+{% endblock %}

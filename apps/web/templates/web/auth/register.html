@@ -1,0 +1,26 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Create an account" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h1 class="h3 mb-4">{% trans "Create an account" %}</h1>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% include "web/partials/form_field.html" with field=form.full_name %}
+            {% include "web/partials/form_field.html" with field=form.email %}
+            {% include "web/partials/form_field.html" with field=form.password %}
+            {% include "web/partials/form_field.html" with field=form.password_confirm %}
+            <button type="submit" class="btn btn-primary w-100">{% trans "Create account" %}</button>
+        </form>
+        <div class="mt-3">
+            <a href="{% url 'web:login' %}">{% trans "Already have an account? Log in" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% load i18n %}
+<form action="{% url 'set_language' %}" method="post" class="d-flex">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <select name="language" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="{% trans 'Language' %}">
+        {% get_current_language as CURRENT_LANGUAGE %}
+        {% get_available_languages as AVAILABLE_LANGUAGES %}
+        {% for code, name in AVAILABLE_LANGUAGES %}
+            <option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+</form>

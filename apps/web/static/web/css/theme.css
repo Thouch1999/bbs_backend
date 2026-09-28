@@ -1,0 +1,83 @@
+:root {
+    --bbms-primary: #0D5F6E;
+    --bbms-primary-dark: #08414C;
+    --bbms-tint: #E6F2F4;
+    --bbms-cta: #F58220;
+    --bbms-cta-hover: #D96D12;
+    --bbms-gold: #F2B233;
+    --bbms-page-bg: #F5F7F9;
+    --bbms-border: #E2E8EC;
+    --bbms-text: #14212B;
+    --bbms-text-muted: #5C6B78;
+    --bbms-text-faint: #9AA7B2;
+    --bbms-success: #16A34A;
+    --bbms-warning: #F59E0B;
+    --bbms-error: #DC2626;
+
+    --bs-primary: var(--bbms-primary);
+    --bs-primary-rgb: 13, 95, 110;
+    --bs-body-bg: var(--bbms-page-bg);
+    --bs-body-color: var(--bbms-text);
+    --bs-border-color: var(--bbms-border);
+}
+
+html[lang="km"] body {
+    font-family: "Kantumruy Pro", "Inter", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+html[lang="en"] body {
+    font-family: "Inter", "Kantumruy Pro", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+body {
+    background-color: var(--bbms-page-bg);
+    color: var(--bbms-text);
+}
+
+a {
+    color: var(--bbms-primary);
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--bbms-primary);
+    --bs-btn-border-color: var(--bbms-primary);
+    --bs-btn-hover-bg: var(--bbms-primary-dark);
+    --bs-btn-hover-border-color: var(--bbms-primary-dark);
+    --bs-btn-active-bg: var(--bbms-primary-dark);
+    --bs-btn-active-border-color: var(--bbms-primary-dark);
+}
+
+.btn-bbms-cta {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--bbms-cta);
+    --bs-btn-border-color: var(--bbms-cta);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--bbms-cta-hover);
+    --bs-btn-hover-border-color: var(--bbms-cta-hover);
+}
+
+.bg-bbms-tint {
+    background-color: var(--bbms-tint);
+}
+
+.text-bbms-muted {
+    color: var(--bbms-text-muted);
+}
+
+.bbms-navbar {
+    background-color: var(--bbms-primary);
+}
+
+.bbms-navbar .navbar-brand,
+.bbms-navbar .nav-link {
+    color: #fff;
+}
+
+.bbms-footer {
+    background-color: var(--bbms-primary-dark);
+    color: #fff;
+}

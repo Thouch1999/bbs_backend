@@ -1,0 +1,33 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "BBMS Bus Booking" %}{% endblock %}
+
+{% block content %}
+    <div class="p-5 mb-4 bg-bbms-tint rounded-3">
+        <h1 class="display-6 fw-bold">{% trans "Book your bus ticket across Cambodia" %}</h1>
+        <p class="text-bbms-muted mb-4">{% trans "Search routes, pick a seat, and get your e-ticket in minutes." %}</p>
+
+        <form method="get" action="{% url 'web:search_results' %}" class="row g-3 bg-white p-3 rounded-3 shadow-sm">
+            <div class="col-md-3">
+                <label class="form-label">{{ search_form.origin.label }}</label>
+                {{ search_form.origin }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ search_form.destination.label }}</label>
+                {{ search_form.destination }}
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ search_form.date.label }}</label>
+                {{ search_form.date }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">{{ search_form.passengers.label }}</label>
+                {{ search_form.passengers }}
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-bbms-cta w-100">{% trans "Search" %}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

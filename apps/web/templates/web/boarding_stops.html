@@ -1,0 +1,36 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Boarding stop" %}{% endblock %}
+
+{% block content %}
+    <h1 class="h4">{% trans "Choose your boarding stop" %}</h1>
+    <p class="text-bbms-muted">
+        {% if LANGUAGE_CODE == "km" %}
+            {{ trip.route.origin_city.name_km }} &rarr; {{ trip.route.destination_city.name_km }}
+        {% else %}
+            {{ trip.route.origin_city.name_en }} &rarr; {{ trip.route.destination_city.name_en }}
+        {% endif %}
+    </p>
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" class="row g-3" style="max-width: 500px;">
+        {% csrf_token %}
+        <div class="col-12">
+            <label class="form-label">{{ form.boarding_stop.label }}</label>
+            {{ form.boarding_stop }}
+            {% for error in form.boarding_stop.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="col-12">
+            <label class="form-label">{{ form.drop_stop.label }}</label>
+            {{ form.drop_stop }}
+            {% for error in form.drop_stop.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-bbms-cta w-100">{% trans "Continue" %}</button>
+        </div>
+    </form>
+{% endblock %}

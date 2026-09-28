@@ -1,0 +1,14 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete saved passenger" %}{% endblock %}
+
+{% block content %}
+    <h1 class="h4 mb-3">{% trans "Delete saved passenger" %}</h1>
+    <p>{% blocktrans with name=passenger.full_name %}Remove "{{ name }}" from your saved passengers?{% endblocktrans %}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger">{% trans "Delete" %}</button>
+        <a href="{% url 'web:profile' %}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+    </form>
+{% endblock %}

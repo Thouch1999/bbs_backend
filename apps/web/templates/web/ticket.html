@@ -1,0 +1,49 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "E-Ticket" %}{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <h1 class="h4">{% trans "E-Ticket" %}</h1>
+        <a href="{% url 'web:ticket_pdf' %}?pnr={{ booking.pnr }}&phone={{ booking.contact_phone|urlencode }}"
+           class="btn btn-outline-primary btn-sm" target="_blank">
+            {% trans "Download PDF" %}
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="mb-1">{% trans "PNR" %}: <strong>{{ booking.pnr }}</strong></p>
+                    <p class="mb-1">
+                        {% if LANGUAGE_CODE == "km" %}
+                            {{ booking.trip.route.origin_city.name_km }} &rarr; {{ booking.trip.route.destination_city.name_km }}
+                        {% else %}
+                            {{ booking.trip.route.origin_city.name_en }} &rarr; {{ booking.trip.route.destination_city.name_en }}
+                        {% endif %}
+                    </p>
+                    <p class="mb-1 text-bbms-muted">{{ booking.trip.departure_at|date:"Y-m-d H:i" }}</p>
+                    <p class="mb-1 fw-bold">{{ booking.total_amount }} {{ booking.currency }}</p>
+                    <span class="badge bg-success">{% trans "Confirmed" %}</span>
+
+                    <h2 class="h6 mt-3">{% trans "Passengers" %}</h2>
+                    <ul class="list-unstyled">
+                        {% for passenger in passengers %}
+                            <li>{{ passenger.full_name }} &mdash; {% trans "Seat" %} {{ passenger.trip_seat.seat.seat_number }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                    <img src="{{ qr_src }}" alt="{% trans 'Boarding QR code' %}" class="img-fluid">
+                    <p class="small text-bbms-muted mt-2">{% trans "Show this QR code when boarding" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'web:my_bookings' %}">{% trans "My bookings" %}</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% trans "BBMS Bus Booking" %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'web/vendor/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/app.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include "web/partials/navbar.html" %}
+
+    <main class="container py-4">
+        {% include "web/partials/flash_messages.html" %}
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include "web/partials/footer.html" %}
+
+    <script src="{% static 'web/vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

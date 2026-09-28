@@ -1,0 +1,81 @@
+{% extends "web/base.html" %}
+{% load i18n bbms_money static %}
+
+{% block title %}{% trans "Select seats" %}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'web/css/app.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1 class="h4">{% trans "Select seats" %}</h1>
+    <p class="text-bbms-muted">
+        {% if LANGUAGE_CODE == "km" %}
+            {{ trip.route.origin_city.name_km }} &rarr; {{ trip.route.destination_city.name_km }}
+        {% else %}
+            {{ trip.route.origin_city.name_en }} &rarr; {{ trip.route.destination_city.name_en }}
+        {% endif %}
+        &middot; {{ trip.departure_at|date:"Y-m-d H:i" }}
+    </p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="bbms-seat-legend mb-3">
+                <span><span class="bbms-seat bbms-seat--available"></span> {% trans "Available" %}</span>
+                <span><span class="bbms-seat bbms-seat--selected"></span> {% trans "Selected" %}</span>
+                <span><span class="bbms-seat bbms-seat--held"></span> {% trans "Held" %}</span>
+                <span><span class="bbms-seat bbms-seat--booked"></span> {% trans "Booked" %}</span>
+                <span><span class="bbms-seat bbms-seat--female"></span> {% trans "Female only" %}</span>
+            </div>
+
+            <div class="bbms-seat-map">
+                {% for trip_seat in trip_seats %}
+                    <button
+                        type="button"
+                        class="bbms-seat bbms-seat--{{ trip_seat.status }}{% if trip_seat.seat.is_female_only %} bbms-seat--female{% endif %}"
+                        style="grid-row: {{ trip_seat.seat.row_position }}; grid-column: {{ trip_seat.seat.col_position }};"
+                        data-seat-id="{{ trip_seat.seat.public_id }}"
+                        data-seat-number="{{ trip_seat.seat.seat_number }}"
+                        {% if trip_seat.status != "available" %}disabled{% endif %}
+                    >{{ trip_seat.seat.seat_number }}</button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6">{% trans "Your selection" %}</h2>
+                    <ul id="bbms-selected-list" class="list-unstyled small text-bbms-muted"></ul>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>{% trans "Fare per seat" %}</span>
+                        <span>
+                            {% if display_currency == "USD" %}{{ trip.base_fare_usd|money:"USD" }}{% else %}{{ trip.base_fare_khr|money:"KHR" }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold mt-2 border-top pt-2">
+                        <span>{% trans "Total" %}</span>
+                        <span id="bbms-fare-total">
+                            {% if display_currency == "USD" %}$0.00{% else %}0 KHR{% endif %}
+                        </span>
+                    </div>
+
+                    <form method="post" class="mt-3" id="bbms-seat-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="seat_ids" id="id_seat_ids">
+                        <button type="submit" class="btn btn-bbms-cta w-100" id="bbms-continue-btn" disabled>
+                            {% trans "Continue" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'web/js/seat-map.js' %}"
+            data-fare-usd="{{ trip.base_fare_usd }}"
+            data-fare-khr="{{ trip.base_fare_khr }}"
+            data-currency="{{ display_currency }}"></script>
+{% endblock %}

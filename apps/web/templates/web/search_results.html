@@ -1,0 +1,90 @@
+{% extends "web/base.html" %}
+{% load i18n bbms_money %}
+
+{% block title %}{% trans "Search results" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <form method="get" action="{% url 'web:search_results' %}" class="bg-white p-3 rounded-3 shadow-sm mb-3">
+            <div class="mb-2">
+                <label class="form-label">{{ search_form.origin.label }}</label>
+                {{ search_form.origin }}
+            </div>
+            <div class="mb-2">
+                <label class="form-label">{{ search_form.destination.label }}</label>
+                {{ search_form.destination }}
+            </div>
+            <div class="mb-2">
+                <label class="form-label">{{ search_form.date.label }}</label>
+                {{ search_form.date }}
+            </div>
+            <button type="submit" class="btn btn-bbms-cta w-100">{% trans "Search" %}</button>
+        </form>
+    </div>
+
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h4 mb-0">{% trans "Trips" %} ({{ page_obj.paginator.count }})</h1>
+            <form method="get" class="d-flex gap-2">
+                <input type="hidden" name="origin" value="{{ origin }}">
+                <input type="hidden" name="destination" value="{{ destination }}">
+                <input type="hidden" name="date" value="{{ date|date:'Y-m-d' }}">
+                <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="departure" {% if sort == "departure" %}selected{% endif %}>{% trans "Departure time" %}</option>
+                    <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>{% trans "Price: low to high" %}</option>
+                    <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>{% trans "Price: high to low" %}</option>
+                </select>
+            </form>
+        </div>
+
+        {% if not page_obj.object_list %}
+            <div class="alert alert-info">{% trans "No trips match your search." %}</div>
+        {% endif %}
+
+        {% for trip in page_obj %}
+            <div class="card mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold">
+                            {% if LANGUAGE_CODE == "km" %}
+                                {{ trip.route.origin_city.name_km }} &rarr; {{ trip.route.destination_city.name_km }}
+                            {% else %}
+                                {{ trip.route.origin_city.name_en }} &rarr; {{ trip.route.destination_city.name_en }}
+                            {% endif %}
+                        </div>
+                        <div class="text-bbms-muted small">
+                            {{ trip.departure_at|date:"Y-m-d H:i" }} &middot;
+                            {% if LANGUAGE_CODE == "km" %}{{ trip.route.operator.name_km|default:trip.route.operator.name }}{% else %}{{ trip.route.operator.name }}{% endif %}
+                            &middot; {{ trip.bus.seat_layout.get_bus_type_display }}
+                        </div>
+                        <div class="small text-bbms-muted">{% trans "Seats available" %}: {{ trip.seats_available }}</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold fs-5">
+                            {% if display_currency == "USD" %}
+                                {{ trip.base_fare_usd|money:"USD" }}
+                            {% else %}
+                                {{ trip.base_fare_khr|money:"KHR" }}
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'web:seat_selection' trip.public_id %}" class="btn btn-primary btn-sm mt-2">{% trans "Select seats" %}</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav>
+                <ul class="pagination">
+                    {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?origin={{ origin }}&destination={{ destination }}&date={{ date|date:'Y-m-d' }}&sort={{ sort }}&page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

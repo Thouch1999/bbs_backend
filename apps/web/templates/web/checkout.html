@@ -1,0 +1,77 @@
+{% extends "web/base.html" %}
+{% load i18n bbms_money %}
+
+{% block title %}{% trans "Checkout" %}{% endblock %}
+
+{% block content %}
+<h1 class="h4">{% trans "Checkout" %}</h1>
+<p class="text-bbms-muted">
+    {% if LANGUAGE_CODE == "km" %}
+        {{ trip.route.origin_city.name_km }} &rarr; {{ trip.route.destination_city.name_km }}
+    {% else %}
+        {{ trip.route.origin_city.name_en }} &rarr; {{ trip.route.destination_city.name_en }}
+    {% endif %}
+    &middot; {{ num_seats }} {% trans "seat(s)" %}
+</p>
+
+{% if contact_form.non_field_errors %}
+    <div class="alert alert-danger">{{ contact_form.non_field_errors }}</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h6">{% trans "Contact details" %}</h2>
+            {% include "web/partials/form_field.html" with field=contact_form.contact_phone %}
+            {% include "web/partials/form_field.html" with field=contact_form.contact_email %}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h6">{% trans "Passenger details" %}</h2>
+            {{ formset.management_form }}
+            {% for pform in formset %}
+                <div class="border rounded-3 p-3 mb-2">
+                    <div class="fw-bold small text-bbms-muted mb-2">{% trans "Seat" %} {{ forloop.counter }}</div>
+                    {% if pform.non_field_errors %}<div class="alert alert-danger">{{ pform.non_field_errors }}</div>{% endif %}
+                    <div class="row">
+                        <div class="col-md-6">{% include "web/partials/form_field.html" with field=pform.full_name %}</div>
+                        <div class="col-md-3">{% include "web/partials/form_field.html" with field=pform.age %}</div>
+                        <div class="col-md-3">{% include "web/partials/form_field.html" with field=pform.gender %}</div>
+                        <div class="col-md-6">{% include "web/partials/form_field.html" with field=pform.phone %}</div>
+                        <div class="col-md-6">{% include "web/partials/form_field.html" with field=pform.id_document_number %}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h6">{% trans "Promo code" %}</h2>
+            {% include "web/partials/form_field.html" with field=promo_form.code %}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h6">{% trans "Payment method" %}</h2>
+            {% include "web/partials/form_field.html" with field=payment_form.provider %}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body d-flex justify-content-between">
+            <span class="fw-bold">{% trans "Subtotal" %}</span>
+            <span class="fw-bold">
+                {% if currency == "USD" %}{{ subtotal|money:"USD" }}{% else %}{{ subtotal|money:"KHR" }}{% endif %}
+            </span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-bbms-cta w-100">{% trans "Confirm booking" %}</button>
+</form>
+{% endblock %}

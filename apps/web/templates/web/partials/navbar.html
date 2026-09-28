@@ -1,0 +1,23 @@
+{% load i18n %}
+<nav class="navbar navbar-expand-lg bbms-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{% url 'web:home' %}">BBMS</a>
+        <div class="d-flex align-items-center gap-3">
+            <a class="nav-link" href="{% url 'web:my_bookings' %}">{% trans "My bookings" %}</a>
+            <a class="nav-link" href="{% url 'web:support' %}">{% trans "Support" %}</a>
+            {% if user.is_authenticated %}
+                <a class="nav-link" href="{% url 'web:profile' %}">{% trans "Profile" %}</a>
+                <span class="text-white small">{{ user.full_name }}</span>
+                <form action="{% url 'web:logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-light">{% trans "Log out" %}</button>
+                </form>
+            {% else %}
+                <a class="nav-link" href="{% url 'web:login' %}">{% trans "Log in" %}</a>
+                <a class="nav-link" href="{% url 'web:register' %}">{% trans "Register" %}</a>
+            {% endif %}
+            {% include "web/partials/currency_switcher.html" %}
+            {% include "web/partials/language_switcher.html" %}
+        </div>
+    </div>
+</nav>

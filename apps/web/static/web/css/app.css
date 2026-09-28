@@ -1,0 +1,61 @@
+/* Page-specific rules added as each passenger-flow page is built. */
+
+.bbms-seat-map {
+    display: grid;
+    grid-template-columns: repeat(4, 48px);
+    grid-auto-rows: 48px;
+    gap: 8px;
+}
+
+.bbms-seat {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid var(--bbms-border);
+    background-color: #fff;
+    color: var(--bbms-text);
+    font-size: 0.8rem;
+}
+
+.bbms-seat--available:not(:disabled):hover {
+    border-color: var(--bbms-primary);
+}
+
+.bbms-seat--selected {
+    background-color: var(--bbms-primary);
+    border-color: var(--bbms-primary);
+    color: #fff;
+}
+
+.bbms-seat--held {
+    background-color: var(--bbms-gold);
+    border-color: var(--bbms-gold);
+    color: #fff;
+}
+
+.bbms-seat--booked {
+    background-color: var(--bbms-text-faint);
+    border-color: var(--bbms-text-faint);
+    color: #fff;
+}
+
+.bbms-seat--female {
+    outline: 2px solid var(--bbms-cta);
+    outline-offset: -2px;
+}
+
+.bbms-seat-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.85rem;
+}
+
+.bbms-seat-legend .bbms-seat {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 4px;
+}

@@ -1,0 +1,44 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile" %}{% endblock %}
+
+{% block content %}
+    <h1 class="h4 mb-3">{% trans "Profile" %}</h1>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h6">{% trans "Personal info" %}</h2>
+            <p class="text-bbms-muted small">{% trans "Email" %}: {{ user.email }} ({% trans "read-only" %})</p>
+            <form method="post" style="max-width: 500px;">
+                {% csrf_token %}
+                {% include "web/partials/form_field.html" with field=form.full_name %}
+                {% include "web/partials/form_field.html" with field=form.phone %}
+                {% include "web/partials/form_field.html" with field=form.preferred_language %}
+                {% include "web/partials/form_field.html" with field=form.preferred_currency %}
+                <button type="submit" class="btn btn-bbms-cta">{% trans "Save" %}</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h6 mb-0">{% trans "Saved passengers" %}</h2>
+                <a href="{% url 'web:saved_passenger_create' %}" class="btn btn-sm btn-primary">{% trans "Add" %}</a>
+            </div>
+            {% if not saved_passengers %}
+                <p class="text-bbms-muted">{% trans "No saved passengers yet." %}</p>
+            {% endif %}
+            {% for passenger in saved_passengers %}
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>{{ passenger.full_name }}{% if passenger.age %} ({{ passenger.age }}){% endif %}</span>
+                    <div>
+                        <a href="{% url 'web:saved_passenger_update' passenger.public_id %}" class="btn btn-sm btn-outline-primary">{% trans "Edit" %}</a>
+                        <a href="{% url 'web:saved_passenger_delete' passenger.public_id %}" class="btn btn-sm btn-outline-danger">{% trans "Delete" %}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
