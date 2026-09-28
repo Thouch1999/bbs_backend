@@ -5,18 +5,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.mixins import OperatorScopedViewSetMixin
-from apps.core.permissions import IsApprovedOperator, IsOperatorOwnerOrManager
+from apps.core.permissions import IsAdmin, IsApprovedOperator, IsOperatorOwnerOrManager
 from apps.core.serializers import ErrorResponseSerializer
 
 from . import services
 from .models import City, Route, RouteStop, Stop
 from .serializers import (
+    AdminCitySerializer,
     CitySerializer,
     RouteSerializer,
     RouteStopListSerializer,
     RouteStopSerializer,
     StopSerializer,
 )
+
+
+class AdminCityViewSet(viewsets.ModelViewSet):
+    """Admin: full city CRUD (cities are platform-wide reference data, not operator-owned)."""
+
+    queryset = City.objects.all().order_by("name_en")
+    serializer_class = AdminCitySerializer
+    permission_classes = [IsAdmin]
+    lookup_field = "public_id"
 
 
 class CityViewSet(viewsets.ReadOnlyModelViewSet):

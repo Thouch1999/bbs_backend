@@ -9,6 +9,13 @@ class CitySerializer(serializers.ModelSerializer):
         fields = ["public_id", "name_en", "name_km", "country_code"]
 
 
+class AdminCitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        fields = ["public_id", "name_en", "name_km", "country_code", "is_active"]
+        read_only_fields = ["public_id"]
+
+
 class StopSerializer(serializers.ModelSerializer):
     city = CitySerializer(read_only=True)
     city_id = serializers.SlugRelatedField(

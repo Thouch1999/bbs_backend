@@ -39,6 +39,58 @@ def cities(db):
     return phnom_penh, siem_reap
 
 
+def _make_admin(email="admin@bbms.test"):
+    return User.objects.create_user(email=email, password="x", role=User.Role.ADMIN, is_staff=True)
+
+
+class TestAdminCityEndpoints:
+    def test_anonymous_cannot_manage_cities(self, api_client, cities):
+        resp = api_client.post("/api/v1/admin/cities/", {"name_en": "Kep", "name_km": "កែប"})
+        assert resp.status_code in (401, 403)
+
+    def test_admin_can_create_update_and_deactivate_city(self, api_client, db):
+        admin = _make_admin()
+        api_client.force_authenticate(admin)
+
+        resp = api_client.post(
+            "/api/v1/admin/cities/", {"name_en": "Kep", "name_km": "កែប", "country_code": "KH"}
+        )
+        assert resp.status_code == 201
+        public_id = resp.data["public_id"]
+
+        resp = api_client.patch(f"/api/v1/admin/cities/{public_id}/", {"name_km": "កែប២"})
+        assert resp.status_code == 200
+        assert resp.data["name_km"] == "កែប២"
+
+        resp = api_client.patch(f"/api/v1/admin/cities/{public_id}/", {"is_active": False})
+        assert resp.status_code == 200
+        assert resp.data["is_active"] is False
+
+        # deactivated cities are hidden from the public list...
+        resp = api_client.get("/api/v1/cities/")
+        assert not any(c["name_en"] == "Kep" for c in resp.data["results"])
+        # ...but admins still see and can manage them.
+        resp = api_client.get("/api/v1/admin/cities/")
+        assert any(c["name_en"] == "Kep" for c in resp.data["results"])
+
+    def test_deleting_a_city_in_use_is_rejected(self, api_client, cities):
+        admin = _make_admin()
+        api_client.force_authenticate(admin)
+        phnom_penh, _siem_reap = cities
+        Stop.objects.create(city=phnom_penh, name_en="Central Station", name_km="នន")
+
+        resp = api_client.delete(f"/api/v1/admin/cities/{phnom_penh.public_id}/")
+        assert resp.status_code == 409
+
+    def test_deleting_an_unused_city_succeeds(self, api_client, cities):
+        admin = _make_admin()
+        api_client.force_authenticate(admin)
+        _phnom_penh, siem_reap = cities
+
+        resp = api_client.delete(f"/api/v1/admin/cities/{siem_reap.public_id}/")
+        assert resp.status_code == 204
+
+
 class TestPublicCityAndStopEndpoints:
     def test_anonymous_can_list_cities(self, api_client, cities):
         resp = api_client.get("/api/v1/cities/")

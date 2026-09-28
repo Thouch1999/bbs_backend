@@ -3,15 +3,32 @@ from django.core.management.base import BaseCommand
 from apps.routes.models import City
 
 CITIES = [
-    # Cambodia
+    # Cambodia — all 25 first-level administrative divisions (24 provinces + Phnom Penh capital)
     ("Phnom Penh", "ភ្នំពេញ", "KH"),
-    ("Siem Reap", "សៀមរាប", "KH"),
-    ("Sihanoukville", "ព្រះសីហនុ", "KH"),
+    ("Banteay Meanchey", "បន្ទាយមានជ័យ", "KH"),
     ("Battambang", "បាត់ដំបង", "KH"),
-    ("Kampot", "កំពត", "KH"),
-    ("Kep", "កែប", "KH"),
     ("Kampong Cham", "កំពង់ចាម", "KH"),
-    ("Poipet", "ប៉ោយប៉ែត", "KH"),
+    ("Kampong Chhnang", "កំពង់ឆ្នាំង", "KH"),
+    ("Kampong Speu", "កំពង់ស្ពឺ", "KH"),
+    ("Kampong Thom", "កំពង់ធំ", "KH"),
+    ("Kampot", "កំពត", "KH"),
+    ("Kandal", "កណ្ដាល", "KH"),
+    ("Kep", "កែប", "KH"),
+    ("Koh Kong", "កោះកុង", "KH"),
+    ("Kratie", "ក្រចេះ", "KH"),
+    ("Mondulkiri", "មណ្ឌលគិរី", "KH"),
+    ("Oddar Meanchey", "ឧត្តរមានជ័យ", "KH"),
+    ("Pailin", "ប៉ៃលិន", "KH"),
+    ("Sihanoukville", "ព្រះសីហនុ", "KH"),
+    ("Preah Vihear", "ព្រះវិហារ", "KH"),
+    ("Prey Veng", "ព្រៃវែង", "KH"),
+    ("Pursat", "ពោធិ៍សាត់", "KH"),
+    ("Ratanakiri", "រតនគិរី", "KH"),
+    ("Siem Reap", "សៀមរាប", "KH"),
+    ("Stung Treng", "ស្ទឹងត្រែង", "KH"),
+    ("Svay Rieng", "ស្វាយរៀង", "KH"),
+    ("Takeo", "តាកែវ", "KH"),
+    ("Tboung Khmum", "ត្បូងឃ្មុំ", "KH"),
     # Cross-border (SRS 14: not in v1 routes, but seeded so the data model is ready)
     ("Bangkok", "បាងកក", "TH"),
     ("Ho Chi Minh City", "ហូជីមិញ", "VN"),

@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
+router.register("admin/cities", views.AdminCityViewSet, basename="admin-city")
 router.register("cities", views.CityViewSet, basename="city")
 router.register("stops", views.StopViewSet, basename="stop")
 router.register("routes", views.RouteViewSet, basename="route")
